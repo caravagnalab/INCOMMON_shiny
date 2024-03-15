@@ -3,6 +3,8 @@ library(TAPACLOTH)
 library(dplyr)
 library(DT)
 # Load cancer gene census data
+## updated version of the cancer_gene_census table
+## this one contains only a unique assigment gene --> gene_role 
 cancer_gene_census_new <- readRDS("~/Desktop/dottorato/tapacloth/cancer_gene_census_new.rds")
 default_prior <- readRDS(("~/Desktop/dottorato/tapacloth/priors_my_drivers.rds"))
 # Define UI
