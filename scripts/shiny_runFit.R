@@ -5,17 +5,32 @@ library(DT)
 # Load cancer gene census data
 ## updated version of the cancer_gene_census table
 ## this one contains only a unique assigment gene --> gene_role 
-cancer_gene_census_new <- readRDS("~/Desktop/dottorato/tapacloth/cancer_gene_census_new.rds")
+cancer_gene_census_new <- readRDS("~/Desktop/dottorato/tapacloth/cancer_gene_census_unique.rds")
 default_prior <- readRDS(("~/Desktop/dottorato/tapacloth/priors_my_drivers.rds"))
 # Define UI
 ui <- fluidPage(
   tabsetPanel(
     id = "tabs",
     tabPanel("Import data",
-             fileInput("upload", "Enter a csv file:"),
-             selectInput("sample", "Sample",choices = NULL),
-             actionButton("submit", "Submit"),
-             tableOutput("data")
+             fluidRow(
+               column(3,
+                      h1("INCOMMON classification"),
+                      p("Classify mutations using a Beta-Binomial model-based test"),
+                      fileInput("upload", "Enter a csv file:"),
+                      #################
+                      selectInput("sample", "Sample",choices = NULL),
+                      p("Select sample of interest"),
+                      #################                      
+                      sliderInput(inputId = "cutoff",label = "Entropy cut-off",
+                                  value = 0.75,min = 0,max = 1,step = 0.1),
+                      p("Entropy cut-off for Tier-1 vs Tier-2 assignment"),
+                      #################
+                      numericInput(inputId = "rho", label = "RHO", value = 0.01),
+                      p("Over-dispersion parameter"),
+                      #################
+                      actionButton("submit", "Submit")),
+               column(6,tableOutput("data"))
+             )
     ),
     tabPanel("Output prediction",
              fluidRow(
@@ -72,7 +87,7 @@ server <- function(input, output, session) {
     # Step2 : run the fit
     out <- reactive({
       req(tapacloth_data())  # Ensure tapacloth_data is available
-      run_classifier(tapacloth_data(), cutoff = 0.75)
+      run_classifier(tapacloth_data(), cutoff = input$cutoff, rho = input$rho)
     })
     
 
