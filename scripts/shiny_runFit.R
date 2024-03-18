@@ -1,12 +1,8 @@
 library(shiny)
-library(TAPACLOTH)
+library(INCOMMON)
 library(dplyr)
 library(DT)
-# Load cancer gene census data
-## updated version of the cancer_gene_census table
-## this one contains only a unique assigment gene --> gene_role 
-cancer_gene_census_new <- readRDS("~/Desktop/dottorato/tapacloth/cancer_gene_census_unique.rds")
-default_prior <- readRDS(("~/Desktop/dottorato/tapacloth/priors_my_drivers.rds"))
+
 # Define UI
 ui <- fluidPage(
   tabsetPanel(
@@ -15,14 +11,18 @@ ui <- fluidPage(
              fluidRow(
                column(3,
                       h1("INCOMMON classification"),
-                      p("Classify mutations using a Beta-Binomial model-based test"),
+                      p("Classify mutations using a Beta-Binomial mixture"),
                       fileInput("upload", "Enter a csv file:"),
                       #################
                       selectInput("sample", "Sample",choices = NULL),
                       p("Select sample of interest"),
                       #################                      
-                      sliderInput(inputId = "cutoff",label = "Entropy cut-off",
-                                  value = 0.75,min = 0,max = 1,step = 0.1),
+                      sliderInput(inputId = "cutoff",
+                                  label = "Entropy cut-off",
+                                  value = 0.75,
+                                  min = 0,
+                                  max = 1,
+                                  step = 0.1),
                       p("Entropy cut-off for Tier-1 vs Tier-2 assignment"),
                       #################
                       numericInput(inputId = "rho", label = "RHO", value = 0.01),
@@ -47,19 +47,19 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   # Reactive expression to read uploaded CSV file
-  data <- reactive({
+  my_data <- reactive({
     req(input$upload)
     read.csv(input$upload$datapath)
   })
   # Select a single sample
   observe({
-    updateSelectInput(session, "sample", choices = unique(data()$sample))
+    updateSelectInput(session, "sample", choices = unique(my_data()$sample))
   })
   # Subset the original dataframe according to the
   # select sample
   filtered_data <- reactive({
     req(input$submit, input$sample)
-    data() %>% 
+    my_data() %>% 
       filter(sample == input$sample)
   })
   
@@ -67,18 +67,19 @@ server <- function(input, output, session) {
     req(input$sample)
     filtered_data()
   })
-  # TAPACLOTH part
+  # INCOMMON part
   # Step1 : initialize the input data
   observeEvent(input$submit, {
-    # Reactive expression for tapacloth data
-    tapacloth_data <- reactive({
+    # Reactive expression for INCOMMON data
+    my_data <- reactive({
       req(filtered_data())  # Ensure data is available
       
       input <- init(
         mutations = filtered_data(),
         sample = input$sample,
+        tumor_type = input$tumor_type,
         purity = filtered_data()$purity %>%  unique(),
-        gene_roles = cancer_gene_census_new
+        gene_roles = INCOMMON::cancer_gene_census
       )
       input$data <- na.omit(object = input$data)
       input
@@ -86,8 +87,11 @@ server <- function(input, output, session) {
     
     # Step2 : run the fit
     out <- reactive({
-      req(tapacloth_data())  # Ensure tapacloth_data is available
-      run_classifier(tapacloth_data(), cutoff = input$cutoff, rho = input$rho)
+      req(my_data())  # Ensure INCOMMON data is available
+      classify(x = my_data(), 
+               priors = INCOMMON::pcawg_priors, 
+               entropy_cutoff = 1,
+               rho = input$rho)
     })
     
 
@@ -96,17 +100,19 @@ server <- function(input, output, session) {
     # Render the output table of the fit
     output$samplesTable <- renderDT({
 
-      datatable(out()$classifier$data %>% dplyr::select(-c(density, p_assign_all,sample,id)) %>%
-                  dplyr::mutate(p_assign=round(p_assign,2)) %>%
-                  dplyr::mutate(VAF=round(VAF,2)) %>%
-                  dplyr::mutate(entropy=round(entropy,2)) %>%
-                  dplyr::mutate(mean_entropy=round(mean_entropy,2)),
-                selection = "single",filter = "top",options = list(scrollX = TRUE, scrollY = TRUE))%>% 
-        formatStyle('VAF',
-                    background = styleColorBar(range(0,1), 'lightblue'),
-                    backgroundSize = '98% 88%',
-                    backgroundRepeat = 'no-repeat',
-                    backgroundPosition = 'center')
+      datatable(
+        out() %>% classification() %>% 
+          dplyr::mutate(posterior = round(posterior, 2), 
+                        entropy = round(entropy, 2),
+                        VAF = round(VAF, 2)),
+        selection = "single", filter = "top", options = list(scrollX = TRUE, scrollY = TRUE)) %>%
+        formatStyle(
+          'VAF',
+          background = styleColorBar(range(0, 1), 'lightblue'),
+          backgroundSize = '98% 88%',
+          backgroundRepeat = 'no-repeat',
+          backgroundPosition = 'center'
+        )
         # formatStyle(
         #           'VAF',
         #           backgroundColor = styleInterval(c(0.2,0.4,0.6,0.8),
@@ -120,7 +126,7 @@ server <- function(input, output, session) {
     # is selected from the output of the fit
     plots <- reactive({
       req(out())  # Ensure out is available
-      plot_test(out())
+      plot_classification(out())
     })
     observeEvent(input$samplesTable_rows_selected, {
       info <- input$samplesTable_rows_selected
