@@ -42,14 +42,14 @@ ui <- fluidPage(
                column(6, plotOutput("plot"))
              ),
              downloadButton("downloadTable", "Download .tsv"),
-             # downloadButton("downloadPlot", "Download .pdf")
+             downloadButton("downloadPlot", "Download .pdf")
     )
   )
 )
 
 
 server <- function(input, output, session) {
-  
+  selected_plot <- reactiveVal(NULL)
   # Reactive expression to read uploaded CSV file
   my_data <- reactive({
     req(input$upload)
@@ -79,7 +79,7 @@ server <- function(input, output, session) {
     my_data <- reactive({
       req(filtered_data())  # Ensure data is available
       
-      input <- init(
+      input <- INCOMMON::init(
         mutations = filtered_data(),
         sample = input$sample,
         tumor_type = input$tumor_type,
@@ -93,18 +93,14 @@ server <- function(input, output, session) {
     # Step2 : run the fit
     out <- reactive({
       req(my_data())  # Ensure INCOMMON data is available
-      classify(x = my_data(), 
+      INCOMMON::classify(x = my_data(), 
                priors = INCOMMON::pcawg_priors, 
                entropy_cutoff = 1,
                rho = input$rho)
     })
-    
 
-    
-    
     # Render the output table of the fit
     output$samplesTable <- renderDT({
-
       datatable(
         out() %>% classification() %>% 
           dplyr::mutate(posterior = round(posterior, 2), 
@@ -118,32 +114,25 @@ server <- function(input, output, session) {
           backgroundRepeat = 'no-repeat',
           backgroundPosition = 'center'
         )
-        # formatStyle(
-        #           'VAF',
-        #           backgroundColor = styleInterval(c(0.2,0.4,0.6,0.8),
-        #                                           c("#FFBFBF","#FF9999","#FF7F7F","#FF3F3F","#FF0000")),
-        #           fontWeight = 'bold')
     })
-    # Switch to the "Output prediction" tab after submitting
     updateTabsetPanel(session, "tabs", "Output prediction")
     
-    # Plot only the gene which
-    # is selected from the output of the fit
+    # Plot only the gene which is selected from the output of the fit
     plots <- reactive({
       req(out())  # Ensure out is available
       plot_classification(out())
     })
+    
     observeEvent(input$samplesTable_rows_selected, {
       info <- input$samplesTable_rows_selected
+      
       if (length(info) > 0) {
         row <- info[[1]]
         if (row <= length(plots())) {
+          # geneID <- info[[1]]
+          selected_plot(plots()[[row]])
           output$plot <- renderPlot({
-            plot <- plots()[[row]]
-            # geneID <- str_extract(plot$labels$title, "\\b\\w+(?= \\(TSG\\))")
-            if (!is.null(plot)) {
-              plot
-            }
+            selected_plot()
           })
         }
       }
@@ -160,7 +149,21 @@ server <- function(input, output, session) {
                 append = F,quote = F)
     }
   )
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      plot <- selected_plot()
+      gene_str =plot$labels$title %>% strsplit(" ") %>% unlist() 
+      geneID <- gene_str[[1]]
+      paste0("plot_fit",geneID,".pdf")
+    },
+    content = function(file) {
+      plot <- selected_plot()
 
+      if (!is.null(plot)) {
+        ggsave(file, plot = plot, device = "pdf", width = 8, height = 6, units = "in", dpi = 300)
+      }
+    }
+  )
 }
 
 
