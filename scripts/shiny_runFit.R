@@ -154,7 +154,7 @@ server <- function(input, output, session) {
       plot <- selected_plot()
       gene_str =plot$labels$title %>% strsplit(" ") %>% unlist() 
       geneID <- gene_str[[1]]
-      paste0("plot_fit",geneID,".pdf")
+      paste0("plot_fit_",geneID,".pdf")
     },
     content = function(file) {
       plot <- selected_plot()
