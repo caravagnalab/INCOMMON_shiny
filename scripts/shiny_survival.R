@@ -20,6 +20,7 @@ format_p = function(p){
 
 ui <- fluidPage(
   titlePanel("Survival Analysis"),
+
   
   sidebarLayout(
     sidebarPanel(
@@ -30,10 +31,10 @@ ui <- fluidPage(
       downloadButton("downloadPlot", "Download Plot"),
       width = 3
     ),
-    
+
     mainPanel(
-      plotOutput("kmPlot"),
-      width = 9
+      plotOutput("kmPlot",width = "70%", height = "800px")
+      # width = "80%"
     )
   )
 )
