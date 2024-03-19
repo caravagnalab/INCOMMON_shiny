@@ -8,8 +8,15 @@ library(tidyr)
 library(tidyverse)
 library(patchwork)
 library(INCOMMON)
-library(insight)
 
+format_p = function(p){
+  case_when(
+    p < 0.0001 ~ "***",
+    p < 0.001 ~ "**",
+    p < 0.05 ~ "*",
+    TRUE ~ "ns"
+  )
+}
 
 ui <- fluidPage(
   titlePanel("Survival Analysis"),
