@@ -297,11 +297,11 @@ server <- function(input, output, session) {
   
   output$downloadPlot <- downloadHandler(
     filename = function() {
-      paste("KM_Plot-", input$tumorType, '-', input$gene, '.png', sep = "")
+      paste("KM_Plot-", input$tumorType, '-', input$gene, '.pdf', sep = "")
     },
     content = function(file) {
       
-      ggsave(file, plot = last_plot(), device = "png", width = 8, height = 6, units = "in", dpi = 300)
+      ggsave(file, plot = last_plot(), device = "pdf", width = 8, height = 12, units = "in", dpi = 300)
     }
   )
   
