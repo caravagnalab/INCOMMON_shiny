@@ -28,6 +28,9 @@ ui <- fluidPage(
                       numericInput(inputId = "rho", label = "RHO", value = 0.01),
                       p("Over-dispersion parameter"),
                       #################
+                      textInput(inputId = "tumor_type",label = "Tumor type",value = NA),
+                      p("Tumor type"),
+                      #################
                       actionButton("submit", "Submit")),
                column(6,tableOutput("data"))
              )
