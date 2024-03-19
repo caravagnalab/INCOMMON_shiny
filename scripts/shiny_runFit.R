@@ -13,6 +13,7 @@ ui <- fluidPage(
                       h1("INCOMMON classification"),
                       p("Classify mutations using a Beta-Binomial mixture"),
                       fileInput("upload", "Enter a csv file:"),
+                      p("Need purity column"),
                       #################
                       selectInput("sample", "Sample",choices = NULL),
                       p("Select sample of interest"),
@@ -63,7 +64,8 @@ server <- function(input, output, session) {
   filtered_data <- reactive({
     req(input$submit, input$sample)
     my_data() %>% 
-      filter(sample == input$sample)
+      filter(sample == input$sample) %>% 
+      select(chr, from, to, ref, alt, gene, NV, DP, VAF, purity)
   })
   
   output$data <- renderTable({
