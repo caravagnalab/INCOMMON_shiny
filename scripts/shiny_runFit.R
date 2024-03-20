@@ -2,6 +2,7 @@ library(shiny)
 library(INCOMMON)
 library(dplyr)
 library(DT)
+library(ggplot2)
 
 # Define UI
 ui <- fluidPage(
