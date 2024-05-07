@@ -1,10 +1,10 @@
-name: INCOMMON
-title: INCOMMON GUI
+name: incommon
+title:
 username: ncalonaci
 account: ncalonaci
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 11951680
-bundleId: 8585865
-url: https://ncalonaci.shinyapps.io/shiny_survival_incommon/
+appId: 11951725
+bundleId: 8585875
+url: https://ncalonaci.shinyapps.io/incommon/
 version: 1
