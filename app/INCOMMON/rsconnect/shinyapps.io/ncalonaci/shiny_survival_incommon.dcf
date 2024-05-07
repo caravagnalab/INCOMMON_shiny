@@ -1,0 +1,10 @@
+name: INCOMMON
+title: INCOMMON GUI
+username: ncalonaci
+account: ncalonaci
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11951680
+bundleId: 8585839
+url: https://ncalonaci.shinyapps.io/INCOMMON/
+version: 1
