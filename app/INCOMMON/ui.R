@@ -13,22 +13,23 @@ choices_covariates <- c("PRIMARY_SITE","SEX","AGE_AT_DEATH","AGE_AT_SEQUENCING",
 # Define UI for application that draws a histogram
 fluidPage(
   titlePanel("Survival Analysis"),
-  
-  
+
+
   sidebarLayout(
     sidebarPanel(
-      fileInput("dataFile", label = HTML(paste0("Upload an INCOMMON fit object ", 
-                                                "or use the MSK classification available on the <a href='https://zenodo.org/records/10927218'>Zenodo repository</a>.")), accept = c(".rds")),
+      fileInput("dataFile", label = HTML(paste0("Upload your own INCOMMON object with classified data\n",
+                                                "or use results of our analysis available at <a href='https://zenodo.org/records/10927218'>zenodo.org/records/10927218 </a>",
+                                                "\n('msk_classified_with_priors.rds')")), accept = c(".rds")),
       checkboxGroupInput("covariates", "Covariates:", choices = choices_covariates),
       selectizeInput("tumorType", "Tumor Type:", choices = NULL),
       selectizeInput("gene", "Gene:", choices = NULL),
       actionButton("plotButton", "Plot"),
       downloadButton("downloadPlot", "Download Plot"),
-      width = 3
+      width = 4
     ),
-    
+
     mainPanel(
-      plotOutput("survivalPlot",width = "70%", height = "800px")
+      plotOutput("survivalPlot",width = "100%", height = "600px")
     )
   )
 )
