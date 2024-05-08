@@ -8,6 +8,9 @@
 #
 options(shiny.maxRequestSize = 30*1024^2)
 library(shiny)
+library(dplyr)
+library(ggplot2)
+
 # library(INCOMMON)
 dir_scripts <- "~/Documents/GitHub/INCOMMON/R/"
 files.sources = list.files(path = dir_scripts,full.names = T)

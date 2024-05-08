@@ -17,8 +17,8 @@ fluidPage(
   
   sidebarLayout(
     sidebarPanel(
-      fileInput("dataFile", label = HTML(paste0("Upload an INCOMMON fit object. ", 
-                                                "You can also <a href='http://example.com'>download the data</a>.")), accept = c(".rds")),
+      fileInput("dataFile", label = HTML(paste0("Upload an INCOMMON fit object ", 
+                                                "or use the MSK classification available on the <a href='https://zenodo.org/records/10927218'>Zenodo repository</a>.")), accept = c(".rds")),
       checkboxGroupInput("covariates", "Covariates:", choices = choices_covariates),
       selectizeInput("tumorType", "Tumor Type:", choices = NULL),
       selectizeInput("gene", "Gene:", choices = NULL),
