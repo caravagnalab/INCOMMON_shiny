@@ -1,19 +1,32 @@
+library(INCOMMON)
+choices_covariates <- c("PRIMARY_SITE",
+                        "SEX",
+                        "AGE_AT_DEATH",
+                        "AGE_AT_SEQUENCING",
+                        "TMB_NONSYNONYMOUS",
+                        "FGA")
 # UI for the survival analysis module
 survival_analysis_ui = function(id) {
   ns <- NS(id)
   fluidPage(
+
     titlePanel("Survival Analysis"),
+
     sidebarLayout(
       sidebarPanel(
-        fileInput(ns("dataFile"), "Choose a Data File (RDS):", accept = c(".rds")),
-        selectizeInput(ns("tumorType"), "Tumor Type", choices = NULL),
-        selectizeInput(ns("gene"), "Gene", choices = NULL),
-        actionButton(ns("plotButton"), "Plot"),
-        downloadButton(ns("downloadPlot"), "Download Plot"),
-        width = 3
+        fileInput("dataFile", label = HTML(paste0("Upload your own INCOMMON object with classified data\n",
+                                                  "or use results of our analysis available at <a href='https://zenodo.org/records/10927218'>zenodo.org/records/10927218 </a>",
+                                                  "\n('msk_classified_with_priors.rds')")), accept = c(".rds")),
+        checkboxGroupInput("covariates", "Covariates:", choices = choices_covariates),
+        selectizeInput("tumorType", "Tumor Type:", choices = NULL),
+        selectizeInput("gene", "Gene:", choices = NULL),
+        actionButton("plotButton", "Plot"),
+        downloadButton("downloadPlot", "Download Plot"),
+        width = 4
       ),
+
       mainPanel(
-        plotOutput(ns("kmPlot"), width = "70%", height = "800px")
+        plotOutput("survivalPlot",width = "100%", height = "600px")
       )
     )
   )
@@ -80,11 +93,34 @@ survival_analysis_module = function(input, output, session) {
 
       return(plot)
     }
+
+    survival_plot = reactive({
+      if (!is.null(data())) {
+        do_figure(data(), input$tumorType, input$gene, input$covariates)
+      }
+    })
+
+    # Render plot
+    output$survival_plot <- renderPlot({
+      plots <- survival_plot()
+      plots  # Return the plot object directly
+    })
   })
 
-
+  # Download plot
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      paste("KM_Plot-", input$tumorType, '-', input$gene, '.pdf', sep = "")
+    },
+    content = function(file) {
+      ggsave(
+        file, plot = last_plot(), device = "pdf",
+        width = 8, height = 12, units = "in",
+        dpi = 300
+      )
+    }
+  )
 }
-
 
 # Run the application
 shinyApp(

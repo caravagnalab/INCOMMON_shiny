@@ -8,9 +8,6 @@
 #
 options(shiny.maxRequestSize = 30*1024^2)
 library(shiny)
-library(dplyr)
-library(ggplot2)
-
 # library(INCOMMON)
 dir_scripts <- "~/Documents/GitHub/INCOMMON/R/"
 files.sources = list.files(path = dir_scripts,full.names = T)
@@ -21,8 +18,9 @@ server = function(input, output, session) {
 
   observeEvent(input$survival_button, {
     output$selected_module <- renderUI({
-      survival_panel
+      # Call the survival analysis shiny app module
+      survival_analysis_ui("survival")
     })
-  })
-
+    callModule(survival_analysis_module, "survival")
+    })
 }
