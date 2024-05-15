@@ -20,13 +20,15 @@ ui <- fluidPage(
   div(style = "background-color: #A9A9A7; padding: 10px;",
       titlePanel("Welcome to the INCOMMON ShinyApp", windowTitle = "INCOMMON")),
   div(style = "margin-top: 20px;",
-      p("Through this application you can use INCOMMON
+      p(HTML("Through this application you can use INCOMMON
         to infer mutation copy number and multiplicity from
         read counts data, interpret the mutant genomes in terms
         of mutational and CNA status of TSGs and oncogenes,
         perform survival and metastatic pattern analysis
-        using the intepreted genomes. Learn how to use INCOMMON at the",
-        tags$a(href = "https://caravagnalab.github.io/INCOMMON", "INCOMMON website", target = "_blank")
+        using the intepreted genomes. Learn how to use INCOMMON at
+             <a href='https://caravagnalab.github.io/INCOMMON'>the INCOMMON website</a>",
+             )
+        # tags$a(href = "https://caravagnalab.github.io/INCOMMON", "INCOMMON website", target = "_blank")
         )
       ),
   # Subtitle asking the user what they want to do
