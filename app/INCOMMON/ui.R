@@ -14,7 +14,7 @@ library(dplyr)
 # Load modules
 source("./modules/1.classification.R")
 source("./modules/2.survival_analysis.R")
-
+source("./modules/3.met_propensity.R")
 ui <- fluidPage(
   # Title
   div(style = "background-color: #A9A9A7; padding: 10px;",
