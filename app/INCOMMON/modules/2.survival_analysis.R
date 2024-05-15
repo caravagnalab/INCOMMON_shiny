@@ -161,7 +161,7 @@ survival_analysis_module = function(input, output, session) {
     content = function(file) {
       ggsave(
         file, plot = last_plot(), device = "pdf",
-        width = 8, height = 12, units = "in",
+        width = 12, height = 8, units = "in",
         dpi = 300
       )
     }

@@ -24,7 +24,7 @@ classification_ui = function(id) {
                      # p("Need purity column"),
                      selectInput(ns("sample"), "Sample", choices = NULL),
                      p("Select one sample"),
-                     numericInput(ns("Entropy Cut-off"),
+                     numericInput(ns("entropy"),
                                   label = "Entropy Cut-off",
                                   value = 1000),
                      p("Choose an entropy cut-off"),
@@ -33,17 +33,19 @@ classification_ui = function(id) {
                      textInput(ns("tumor_type"), label = "Tumor type", value = NA),
                      p("Tumor type"),
                      actionButton(ns("submit"), "Submit")),
-              column(6, tableOutput(ns("data")))
+              column(6, tableOutput(ns("data"))),
+              column(6, plotOutput(ns("classification_plot")))
               ),
-            tabPanel(
-              title = 'Output table',
-              fluidRow(
-                column(6, DTOutput(ns("samplesTable"))),
-                column(6, plotOutput(ns("plot")))
-              ),
-              downloadButton(ns("downloadTable"), "Download .tsv"),
-              downloadButton(ns("downloadPlot"), "Download .pdf")
-            )
+        downloadButton(ns("downloadPlot"), "Download .pdf")
+            # tabPanel(
+            #   title = 'Output table',
+            #   fluidRow(
+            #     column(6, DTOutput(ns("samplesTable"))),
+            #     column(6, plotOutput(ns("plot")))
+            #   ),
+            #   downloadButton(ns("downloadTable"), "Download .tsv"),
+            #   downloadButton(ns("downloadPlot"), "Download .pdf")
+            # )
         )
       )
     )
@@ -64,7 +66,7 @@ classification_module = function(input, output, session) {
 
   # Subset the original dataframe according to the select sample
   filtered_data <- reactive({
-    req(input$submit, input$sample)
+    req(input$sample)
     data() %>%
       INCOMMON:::subset_sample(x = ., sample = input$sample) %>%
       INCOMMON:::input() %>%
@@ -73,9 +75,64 @@ classification_module = function(input, output, session) {
     #   filter(sample == input$sample) %>%
     #   select(chr, from, to, ref, alt, gene, NV, DP, VAF, purity)
   })
-
+  
+  filtered_data_incommon <- reactive({
+    req(input$submit, input$sample)
+    data() %>%
+      INCOMMON:::subset_sample(x = ., sample = input$sample)
+    # data()$input %>%
+    #   filter(sample == input$sample) %>%
+    #   select(chr, from, to, ref, alt, gene, NV, DP, VAF, purity)
+  })
+  
   output$data <- renderTable({
     req(input$sample)
     filtered_data()
   })
+  
+  # Step2 : run the fit
+  # 
+  do_figure = function(x, entropy, rho, sample){
+    
+    # run fit
+    x =INCOMMON::classify(x = x,
+                       priors = INCOMMON::pcawg_priors,
+                       entropy_cutoff = entropy,
+                       rho = rho)
+    
+
+    
+    # Plot fit
+    plot = plot_classification(x, 
+                               sample = sample, assembly = T)
+    
+    return(plot)
+  }
+
+  classification_plot = reactive({
+    if (!is.null(filtered_data_incommon())) {
+      do_figure(filtered_data_incommon(), input$entropy, input$rho, input$sample)
+    }
+  })
+  # Render plot
+  output$classification_plot <- renderPlot({
+    plots <- classification_plot()
+    plots  # Return the plot object directly
+  })
+  
+  # Download plot
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      paste("Classification_Plot-", input$sample,'.pdf', sep = "")
+    },
+    content = function(file) {
+      ggsave(
+        file, plot = last_plot(), device = "pdf",
+        width = 12, height = 8, units = "in",
+        dpi = 300
+      )
+    }
+  )
+  
+  
 }
