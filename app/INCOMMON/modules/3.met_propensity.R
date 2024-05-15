@@ -47,39 +47,7 @@ met_propensity_ui = function(id) {
     # )
     # )
   )
-  
-#   ns <- NS(id)
-#   fluidPage(
-#     tabsetPanel(
-#       id = ns('tabs'),
-#       tabPanel(
-#         title = 'Metastatic propensity',
-#         fluidRow(
-#           column(
-#             3,
-#             h1("Metastatic propensity score"),
-#             p("Infer the metastatic propensity of primary tumor genomes containing a specific gene"),
-#             fileInput(
-#               ns("dataFile"),
-#               label = HTML(paste0("Upload your own initialised INCOMMON object\n",
-#                                   "or use results of our analysis available at <a href='https://zenodo.org/records/10927218'>zenodo.org/records/10927218 </a>",
-#                                   "\n('msk_classified_with_priors.rds')")
-#               ),
-#               accept = c(".rds")
-#             ),
-#             # p("Need purity column"),
-#             selectizeInput(ns("tumor_type"), "Tumor Type:", choices = NULL),
-#             actionButton(ns("plotButton"), "Plot")
-#             # selectInput(ns("gene"), "Gene", choices = NULL),
-#         ),
-#         mainPanel(
-#           plotOutput(ns("met_prop_plot"),width = "100%", height = "600px")
-#         ),
-#         downloadButton(ns("downloadPlot"), "Download .pdf")
-#       )
-#     )
-#   )
-# )
+
 }
 
 met_propensity_module = function(input, output, session) {

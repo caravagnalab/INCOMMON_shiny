@@ -40,8 +40,17 @@ server = function(input, output, session) {
   observeEvent(input$met_propensity_button, {
     output$selected_module <- renderUI({
       # Call the survival analysis shiny app module
-      met_propensity_ui("survival")
+      met_propensity_ui("met_propensity")
     })
-    callModule(met_propensity_module, "survival")
+    callModule(met_propensity_module, "met_propensity")
+  })
+  
+  # What happens when clicking on Metastatic propensity button
+  observeEvent(input$met_tropism_button, {
+    output$selected_module <- renderUI({
+      # Call the survival analysis shiny app module
+      met_tropism_ui("met_tropism")
+    })
+    callModule(met_tropism_module, "met_tropism")
   })
 }
