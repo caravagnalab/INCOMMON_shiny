@@ -4,6 +4,7 @@ library(DT)
 classification_ui = function(id) {
   ns <- NS(id)
   fluidPage(
+    # autoWaiter(),
     tabsetPanel(
       id = ns('tabs'),
       tabPanel(

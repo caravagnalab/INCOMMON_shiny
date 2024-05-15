@@ -10,7 +10,7 @@
 
 library(shiny)
 library(dplyr)
-
+library(waiter)
 # Load modules
 source("./modules/1.classification.R")
 source("./modules/2.survival_analysis.R")

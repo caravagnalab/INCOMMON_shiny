@@ -9,6 +9,7 @@
 options(shiny.maxRequestSize = 30*1024^2)
 library(shiny)
 library(ggplot2)
+library(waiter)
 # library(INCOMMON)
 dir_scripts <- "~/Documents/GitHub/INCOMMON/R/"
 files.sources = list.files(path = dir_scripts,full.names = T)
@@ -27,6 +28,7 @@ server = function(input, output, session) {
   })
 
   # What happens when clicking on Survival Analysis button
+
   observeEvent(input$survival_button, {
     output$selected_module <- renderUI({
       # Call the survival analysis shiny app module
@@ -34,8 +36,8 @@ server = function(input, output, session) {
     })
     callModule(survival_analysis_module, "survival")
   })
-  
-  
+
+
   # What happens when clicking on Metastatic propensity button
   observeEvent(input$met_propensity_button, {
     output$selected_module <- renderUI({
@@ -44,7 +46,7 @@ server = function(input, output, session) {
     })
     callModule(met_propensity_module, "met_propensity")
   })
-  
+
   # What happens when clicking on Metastatic propensity button
   observeEvent(input$met_tropism_button, {
     output$selected_module <- renderUI({

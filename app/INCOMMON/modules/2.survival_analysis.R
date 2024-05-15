@@ -14,6 +14,7 @@ choices_covariates <- c("PRIMARY_SITE",
 survival_analysis_ui = function(id) {
   ns <- NS(id)
   fluidPage(
+    # autoWaiter(),
     tabsetPanel(
       id = ns('tabs'),
       tabPanel(

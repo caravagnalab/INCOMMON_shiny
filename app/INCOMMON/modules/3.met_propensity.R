@@ -4,6 +4,7 @@ library(DT)
 met_propensity_ui = function(id) {
   ns <- NS(id)
   fluidPage(
+    # autoWaiter(),
     tabsetPanel(
       id = ns('tabs'),
       tabPanel(
@@ -17,11 +18,13 @@ met_propensity_ui = function(id) {
               selectizeInput(ns("tumorType"), "Tumor Type:", choices = NULL),
               actionButton(ns("plotButton"), "Plot"),
               downloadButton(ns("downloadPlot"), "Download Plot"),
+              downloadButton(ns("downloadTable"), "Download Table"),
               width = 4
             ),
             
             mainPanel(
-              plotOutput(ns("met_prop_plot"),width = "80%", height = "400px")
+              plotOutput(ns("met_prop_plot"),width = "80%", height = "400px"),
+              DTOutput(ns("met_prop_table"))
             )
           )
         )
@@ -80,6 +83,8 @@ met_propensity_module = function(input, output, session) {
     
     # Use INCOMMON functions to perform survival analysis and make summary figure
     do_figure = function(x, tumor_type){
+      results.names <- c("table", "plot") 
+      results <-vector("list", length(results.names)) |> setNames(results.names)
       top_genes = classification(x) %>% 
         dplyr::filter(state != 'Tier-2') %>% 
         dplyr::group_by(gene) %>% 
@@ -90,12 +95,13 @@ met_propensity_module = function(input, output, session) {
       # run metastatic propensity analysis
       for(g in top_genes){
         x = met_propensity(x, tumor_type = tumor_type, gene = g)
+        x$metastatic_propensity[tumor_type][[g]]
       }
-      
+      results$table <- do.call(rbind, x$metastatic_propensity[[tumor_type]])
       # Plot surv analysis
-      plot <- plot_met_volcano(x = x, tumor_type = tumor_type)
+      results$plot <- plot_met_volcano(x = x, tumor_type = tumor_type)
       
-      return(plot)
+      return(results)
     }
     
     met_prop_plot = reactive({
@@ -106,10 +112,31 @@ met_propensity_module = function(input, output, session) {
     
     # Render plot
     output$met_prop_plot <- renderPlot({
-      plots <- met_prop_plot()
+      plots <- met_prop_plot()$plot
       plots  # Return the plot object directly
     })
+    
+    # Render the output table of the fit
+    output$met_prop_table <- renderDT({
+      datatable((met_prop_plot()$table %>% 
+                  dplyr::mutate(low = round(low, 4),
+                                up = round(up, 4),
+                                p.value = round(p.value, 4),
+                                OR = round(OR,4))),
+        options = list(scrollX = TRUE, scrollY = TRUE))
+    })
   })
+  
+  # Download button for the output table
+  output$downloadTable <- downloadHandler(
+    filename = function() {
+      paste("Metastatic_Prop_Results", input$tumorType,".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(met_prop_plot()$table, file, row.names = FALSE,
+                append = F, quote = F)
+    }
+  )
   
   # Download plot
   output$downloadPlot <- downloadHandler(
