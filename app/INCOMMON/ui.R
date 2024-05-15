@@ -12,6 +12,7 @@ library(shiny)
 library(dplyr)
 
 # Load modules
+source("./modules/1.classification.R")
 source("./modules/2.survival_analysis.R")
 
 ui <- fluidPage(
@@ -36,7 +37,7 @@ ui <- fluidPage(
   # actionButton("survival_button", "Survival Analysis"),
   # actionButton("met_propensity_button", "Metastatic Porpensity"),
   # actionButton("met_tropism_button", "Metastatic Tropism"),
-  
+
   # CSS to style the action buttons
   tags$head(
     tags$style(HTML("
@@ -75,7 +76,7 @@ ui <- fluidPage(
       .met-tropism-btn { background-color: #ff9800; }
     "))
   ),
-  
+
   # Action buttons in two columns
   fluidRow(
     column(6, align = "center",
@@ -94,7 +95,7 @@ ui <- fluidPage(
            actionButton("met_tropism_button", "Metastatic Tropism", class = "action-btn met-tropism-btn",
                         title = "Input: Tumor imaging data.\nOutput: Prediction of metastatic tropism.")))
   ,
-  
+
   # Placeholder for rendering the selected shiny app module
   uiOutput("selected_module")
 )

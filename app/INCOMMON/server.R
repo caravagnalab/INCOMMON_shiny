@@ -16,7 +16,17 @@ sapply(files.sources, source)
 
 # Define server logic required to draw a histogram
 server = function(input, output, session) {
-  
+
+  # What happens when clicking on Classification button
+  observeEvent(input$classification_button, {
+    output$selected_module <- renderUI({
+      # Call the classification shiny app module
+      classification_ui("classification")
+    })
+    callModule(classification_module, "classification")
+  })
+
+  # What happens when clicking on Survival Analysis button
   observeEvent(input$survival_button, {
     output$selected_module <- renderUI({
       # Call the survival analysis shiny app module
