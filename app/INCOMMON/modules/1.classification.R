@@ -37,7 +37,8 @@ classification_ui = function(id) {
               column(6, tableOutput(ns("data"))),
               column(6, plotOutput(ns("classification_plot")))
               ),
-        downloadButton(ns("downloadPlot"), "Download .pdf")
+        downloadButton(ns("downloadPlot"), "Download .pdf"),
+        downloadButton(ns("downloadRDS"), "Download .rds")
             # tabPanel(
             #   title = 'Output table',
             #   fluidRow(
@@ -94,7 +95,8 @@ classification_module = function(input, output, session) {
   # Step2 : run the fit
   # 
   do_figure = function(x, entropy, rho, sample){
-    
+    results.names <- c("rds", "plot") 
+    results <-vector("list", length(results.names)) |> setNames(results.names)
     # run fit
     x =INCOMMON::classify(x = x,
                        priors = INCOMMON::pcawg_priors,
@@ -102,12 +104,12 @@ classification_module = function(input, output, session) {
                        rho = rho)
     
 
-    
+    results$rds <- x 
     # Plot fit
-    plot = plot_classification(x, 
+    results$plot = plot_classification(x, 
                                sample = sample, assembly = T)
     
-    return(plot)
+    return(results)
   }
 
   classification_plot = reactive({
@@ -117,7 +119,7 @@ classification_module = function(input, output, session) {
   })
   # Render plot
   output$classification_plot <- renderPlot({
-    plots <- classification_plot()
+    plots <- classification_plot()$plot
     plots  # Return the plot object directly
   })
   
@@ -134,6 +136,14 @@ classification_module = function(input, output, session) {
       )
     }
   )
-  
+  # Download incommon fit
+  output$downloadRDS <- downloadHandler(
+    filename = function() {
+      paste("Classification_Object-", input$sample,'.rds', sep = "")
+    },
+    content = function(file) {
+      saveRDS(object = classification_plot()$rds,file = file)
+    }
+  )
   
 }

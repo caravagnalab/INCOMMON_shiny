@@ -108,16 +108,13 @@ met_tropism_module = function(input, output, session) {
         for(g in top_genes[1:10]){
           x = met_tropism(x, gene = g, tumor_type = tumor_type, metastatic_site = m)
         }
-        # sub_results[[m]] <- do.call(rbind, x$metastatic_tropism[[tumor_type]][[m]])
       }
       
-      
-      # results$table <- do.call(rbind, x$metastatic_tropism[[tumor_type]])
+      flat_list <- unlist(x$metastatic_tropism[[tumor_type]], recursive = FALSE)
+      results$table <- bind_rows(flat_list)
 
-      # results$plot <- plot_tropism(x = x, tumor_type = tumor_type)
-      plot <- plot_tropism(x = x, tumor_type = tumor_type)
-      return(plot)
-      # return(results)
+      results$plot <- plot_tropism(x = x, tumor_type = tumor_type)
+      return(results)
     }
     
 
@@ -130,20 +127,20 @@ met_tropism_module = function(input, output, session) {
     
     # Render plot
     output$met_trop_plot <- renderPlot({
-      plots <- met_trop_plot()
-      # plots <- met_trop_plot()$plot
+      # plots <- met_trop_plot()
+      plots <- met_trop_plot()$plot
       plots  # Return the plot object directly
     })
     
     # Render the output table of the fit
-    # output$met_trop_table <- renderDT({
-    #   datatable((met_trop_plot()$table %>% 
-    #                dplyr::mutate(low = round(low, 4),
-    #                              up = round(up, 4),
-    #                              p.value = round(p.value, 4),
-    #                              OR = round(OR,4))),
-    #             options = list(scrollX = TRUE, scrollY = TRUE))
-    # })
+    output$met_trop_table <- renderDT({
+      datatable((met_trop_plot()$table %>%
+                   dplyr::mutate(low = round(low, 4),
+                                 up = round(up, 4),
+                                 p.value = round(p.value, 4),
+                                 OR = round(OR,4))),
+                options = list(scrollX = TRUE, scrollY = TRUE))
+    })
 
   })
   
