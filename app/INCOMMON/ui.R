@@ -9,6 +9,7 @@
 #
 
 library(shiny)
+library(dplyr)
 
 # Load modules
 source("./modules/2.survival_analysis.R")
@@ -16,11 +17,20 @@ source("./modules/2.survival_analysis.R")
 ui <- fluidPage(
   # Title
   div(style = "background-color: #A9A9A7; padding: 10px;",
-      titlePanel("Welcome to INCOMMON ShinyApp", windowTitle = "INCOMMON")),
+      titlePanel("Welcome to the INCOMMON ShinyApp", windowTitle = "INCOMMON")),
+  div(style = "margin-top: 20px;",
+      p("Through this application you can use INCOMMON
+        to infer mutation copy number and multiplicity from
+        read counts data, interpret the mutant genomes in terms
+        of mutational and CNA status of TSGs and oncogenes,
+        perform survival and metastatic pattern analysis
+        using the intepreted genomes. Learn how to use INCOMMON at the",
+        tags$a(href = "https://caravagnalab.github.io/INCOMMON", "INCOMMON website", target = "_blank")
+        )
+      ),
   # Subtitle asking the user what they want to do
   div(style = "background-color: #B0BEC5; padding: 10px;",
-      h3("Use INCOMMON for:")),
-  
+      h3("Select one workflow")),
   # # Action buttons to choose what to do
   # actionButton("classification_button", "Classification", ),
   # actionButton("survival_button", "Survival Analysis"),
