@@ -1,3 +1,4 @@
+
 #
 # This is the user-interface definition of a Shiny web application. You can
 # run the application by clicking 'Run App' above.
@@ -19,13 +20,13 @@ ui <- fluidPage(
   # Subtitle asking the user what they want to do
   div(style = "background-color: #B0BEC5; padding: 10px;",
       h3("Use INCOMMON for:")),
-
+  
   # # Action buttons to choose what to do
   # actionButton("classification_button", "Classification", ),
   # actionButton("survival_button", "Survival Analysis"),
   # actionButton("met_propensity_button", "Metastatic Porpensity"),
   # actionButton("met_tropism_button", "Metastatic Tropism"),
-
+  
   # CSS to style the action buttons
   tags$head(
     tags$style(HTML("
@@ -64,7 +65,7 @@ ui <- fluidPage(
       .met-tropism-btn { background-color: #ff9800; }
     "))
   ),
-
+  
   # Action buttons in two columns
   fluidRow(
     column(6, align = "center",
@@ -83,7 +84,7 @@ ui <- fluidPage(
            actionButton("met_tropism_button", "Metastatic Tropism", class = "action-btn met-tropism-btn",
                         title = "Input: Tumor imaging data.\nOutput: Prediction of metastatic tropism.")))
   ,
-
+  
   # Placeholder for rendering the selected shiny app module
   uiOutput("selected_module")
 )

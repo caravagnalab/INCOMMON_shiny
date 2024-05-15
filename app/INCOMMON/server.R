@@ -8,6 +8,7 @@
 #
 options(shiny.maxRequestSize = 30*1024^2)
 library(shiny)
+library(ggplot2)
 # library(INCOMMON)
 dir_scripts <- "~/Documents/GitHub/INCOMMON/R/"
 files.sources = list.files(path = dir_scripts,full.names = T)
@@ -15,12 +16,12 @@ sapply(files.sources, source)
 
 # Define server logic required to draw a histogram
 server = function(input, output, session) {
-
+  
   observeEvent(input$survival_button, {
     output$selected_module <- renderUI({
       # Call the survival analysis shiny app module
       survival_analysis_ui("survival")
     })
     callModule(survival_analysis_module, "survival")
-    })
+  })
 }
