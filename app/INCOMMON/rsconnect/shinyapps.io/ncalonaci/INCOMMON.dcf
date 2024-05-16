@@ -5,6 +5,6 @@ account: ncalonaci
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11951725
-bundleId: 8595705
+bundleId:
 url: https://ncalonaci.shinyapps.io/incommon/
 version: 1
