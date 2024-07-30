@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-options(shiny.maxRequestSize = 30*1024^2)
+options(shiny.maxRequestSize = 60*1024^2)
 library(shiny)
 library(ggplot2)
 library(waiter)
