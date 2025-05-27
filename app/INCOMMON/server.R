@@ -18,6 +18,15 @@ sapply(files.sources, source)
 # Define server logic required to draw a histogram
 server = function(input, output, session) {
 
+  # Temporary warning (upcoming version)
+  showModal(modalDialog(
+    title = "Upcoming Update (28/05/2025)",
+    "The paper describing the new version of INCOMMON is currently under review.
+    The new version of this application will be soon made available for the Reviewers.
+    Nicola Calonaci",
+    easyClose = TRUE,
+    footer = NULL
+  ))
   # What happens when clicking on Classification button
   observeEvent(input$classification_button, {
     output$selected_module <- renderUI({

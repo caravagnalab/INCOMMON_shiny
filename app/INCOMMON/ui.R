@@ -54,50 +54,6 @@ ui <- fluidPage(
   # Subtitle asking the user what they want to do
   div(style = "background-color: #B0BEC5; padding: 10px;",
       h3("Select a task")),
-  # # Action buttons to choose what to do
-  # actionButton("classification_button", "Classification", ),
-  # actionButton("survival_button", "Survival Analysis"),
-  # actionButton("met_propensity_button", "Metastatic Porpensity"),
-  # actionButton("met_tropism_button", "Metastatic Tropism"),
-
-  # CSS to style the action buttons
-  # tags$head(
-  #   tags$style(HTML("
-  #     .action-btn {
-  #       width: 200px;
-  #       height: 100px;
-  #       margin: 20px;
-  #       font-size: 18px;
-  #       border-radius: 10px;
-  #       position: relative;
-  #     }
-  #     .action-btn .tooltiptext {
-  #       visibility: hidden;
-  #       width: 220px;
-  #       background-color: #555;
-  #       color: #fff;
-  #       text-align: center;
-  #       border-radius: 6px;
-  #       padding: 10px;
-  #       position: absolute;
-  #       z-index: 1;
-  #       bottom: 125%;
-  #       left: 50%;
-  #       margin-left: -110px;
-  #       opacity: 0;
-  #       transition: opacity 0.3s;
-  #     }
-  #     .action-btn:hover .tooltiptext {
-  #       visibility: visible;
-  #       opacity: 1;
-  #     }
-  #
-  #     .classification-btn { background-color: #4CAF50; }
-  #     .survival-btn { background-color: #2196F3; }
-  #     .met-propensity-btn { background-color: #f44336; }
-  #     .met-tropism-btn { background-color: #ff9800; }
-  #   "))
-  # ),
 
   tags$style(HTML(
     ".classification-button {
